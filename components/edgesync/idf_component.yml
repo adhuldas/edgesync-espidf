@@ -1,0 +1,7 @@
+version: "0.1.0"
+description: >-
+  Reliable store-and-forward data delivery for ESP-IDF: a durable, crash-safe
+  flash queue with automatic retry/backoff, delivered over HTTP(S) or any
+  pluggable transport.
+dependencies:
+  idf: ">=5.0"

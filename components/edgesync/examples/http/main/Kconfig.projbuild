@@ -1,0 +1,20 @@
+menu "EdgeSync HTTP Example"
+
+    config EXAMPLE_WIFI_SSID
+        string "Wi-Fi SSID"
+        default "myssid"
+
+    config EXAMPLE_WIFI_PASSWORD
+        string "Wi-Fi password"
+        default "mypassword"
+
+    config EXAMPLE_HTTP_ENDPOINT
+        string "EdgeSync HTTP(S) ingest URL"
+        default "https://httpbin.org/post"
+        help
+            Base URL passed to edgesync_config_t::http.url. Each publish is
+            POSTed to "<this>/<destination>". httpbin.org's /post endpoint
+            echoes the request back, so it is only usable for connectivity
+            testing, not a real "/post/telemetry" destination path.
+
+endmenu

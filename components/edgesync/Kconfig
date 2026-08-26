@@ -1,0 +1,59 @@
+menu "EdgeSync"
+
+    config EDGESYNC_MAX_QUEUE_SIZE
+        int "Default max queued messages"
+        default 256
+        help
+            Default for edgesync_config_t::max_queue_size when left at 0.
+            Also bounds the in-memory index kept by the built-in storage
+            backends, so it directly affects RAM usage - see STORAGE.md.
+
+    config EDGESYNC_MAX_MESSAGE_SIZE
+        int "Default max payload size (bytes)"
+        default 2048
+        help
+            Default for edgesync_config_t::max_message_size when left at 0.
+
+    config EDGESYNC_DEFAULT_RETRY_INITIAL_MS
+        int "Default initial retry delay (ms)"
+        default 1000
+        help
+            Delay before the second attempt at a message (the first attempt
+            is always immediate). Default for edgesync_config_t::retry_initial_ms.
+
+    config EDGESYNC_DEFAULT_RETRY_MAX_MS
+        int "Default max retry delay (ms)"
+        default 300000
+        help
+            Upper bound on exponential backoff. Default for
+            edgesync_config_t::retry_max_ms.
+
+    config EDGESYNC_TASK_STACK_SIZE
+        int "Worker task stack size (bytes)"
+        default 4096
+        help
+            Default for edgesync_config_t::task_stack_size.
+
+    config EDGESYNC_TASK_PRIORITY
+        int "Worker task priority"
+        default 5
+        help
+            Default for edgesync_config_t::task_priority.
+
+    config EDGESYNC_WORKER_IDLE_POLL_MS
+        int "Worker idle poll interval (ms)"
+        default 5000
+        help
+            Upper bound on how long the worker sleeps when nothing is
+            eligible for delivery, before re-checking for matured retries.
+            A successful publish() wakes the worker immediately regardless
+            of this value.
+
+    config EDGESYNC_HTTP_DEFAULT_TIMEOUT_MS
+        int "Default HTTP transport per-attempt timeout (ms)"
+        default 30000
+        help
+            Default for edgesync_http_transport_config_t::timeout_ms when
+            left at 0. Only used by the built-in HTTP(S) transport.
+
+endmenu

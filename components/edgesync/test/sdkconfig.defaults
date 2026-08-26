@@ -1,0 +1,5 @@
+CONFIG_PARTITION_TABLE_CUSTOM=y
+CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions.csv"
+
+# Keep on-target test timing fast and deterministic.
+CONFIG_EDGESYNC_WORKER_IDLE_POLL_MS=200

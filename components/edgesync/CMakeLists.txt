@@ -1,0 +1,31 @@
+idf_component_register(
+    SRCS
+        "src/edgesync.c"
+        "src/edgesync_queue.c"
+        "src/edgesync_worker.c"
+        "src/edgesync_events.c"
+        "src/edgesync_storage.c"
+        "src/edgesync_storage_flashq.c"
+        "src/edgesync_storage_nvs.c"
+        "src/edgesync_flashq_format.c"
+        "src/edgesync_crc32.c"
+        "src/edgesync_retry.c"
+        "src/edgesync_id.c"
+        "src/edgesync_transport.c"
+        "src/edgesync_http.c"
+    INCLUDE_DIRS
+        "include"
+    PRIV_INCLUDE_DIRS
+        "src"
+    REQUIRES
+        freertos
+        esp_common
+    PRIV_REQUIRES
+        log
+        esp_timer
+        esp_hw_support
+        esp_partition
+        nvs_flash
+        esp_http_client
+        esp-tls
+)
