@@ -1,0 +1,65 @@
+name: Dynamic Publish and Release
+
+on:
+  push:
+    branches:
+      - main  # Runs whenever you merge code or push to main
+    paths:
+      - 'components/edgesync/idf_component.yml' # Only kicks off if the manifest file itself changed
+
+jobs:
+  check_and_publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Required to safely generate GitHub Releases
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Component Manager
+        run: |
+          pip install --upgrade pip
+          pip install idf-component-manager yq
+
+      - name: Parse Component Version
+        id: get_version
+        run: |
+          # Safely extract the version value from your YAML file
+          VERSION=$(yq e '.version' components/edgesync/idf_component.yml)
+          echo "version=v$VERSION" >> $GITHUB_OUTPUT
+          echo "Detected component version: v$VERSION"
+
+      - name: Check if Git Tag Already Exists
+        id: check_tag
+        run: |
+          git fetch --tags
+          if git rev-parse "${{ steps.get_version.outputs.version }}" >/dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "Version ${{ steps.get_version.outputs.version }} already exists. Skipping lifecycle."
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Upload to Espressif Component Registry
+        if: steps.check_tag.outputs.exists == 'false'
+        env:
+          IDF_COMPONENT_API_TOKEN: ${{ secrets.IDF_COMPONENT_API_TOKEN }}
+        run: |
+          # --allow-existing ensures the command exits safely if registry sync lags
+          compote component upload --namespace adhuldas --name edgesync --allow-existing --project-dir components/edgesync
+
+      - name: Create GitHub Release
+        if: steps.check_tag.outputs.exists == 'false'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.get_version.outputs.version }}
+          name: Release ${{ steps.get_version.outputs.version }}
+          body: "Automated deployment of version ${{ steps.get_version.outputs.version }} to the Espressif Registry."
+          draft: false
+          prerelease: false

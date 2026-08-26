@@ -3,5 +3,32 @@ description: >-
   Reliable store-and-forward data delivery for ESP-IDF: a durable, crash-safe
   flash queue with automatic retry/backoff, delivered over HTTP(S) or any
   pluggable transport.
+license: "Apache-2.0"
+url: https://github.com/adhuldas/edgesync-espidf
+repository: https://github.com/adhuldas/edgesync-espidf.git
+documentation: https://github.com/adhuldas/edgesync-espidf/blob/main/components/edgesync/README.md
+issues: https://github.com/adhuldas/edgesync-espidf/issues
+tags:
+  - storage
+  - networking
+  - reliability
+  - http
+  - offline-first
 dependencies:
   idf: ">=5.0"
+files:
+  exclude:
+    - "test/build/**/*"
+    - "test/build_*/**/*"
+    - "test/sdkconfig"
+    - "test/sdkconfig.old"
+    - "test/dependencies.lock"
+    - "test/managed_components/**/*"
+    - "test_host/**/*"
+    - "examples/**/build/**/*"
+    - "examples/**/sdkconfig"
+    - "examples/**/sdkconfig.old"
+    - "examples/**/dependencies.lock"
+    - "examples/**/managed_components/**/*"
+    - "**/*.dSYM/**/*"
+    - "**/.DS_Store"
