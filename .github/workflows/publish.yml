@@ -31,7 +31,7 @@ jobs:
         id: get_version
         run: |
           # Safely extract the version value from your YAML file
-          VERSION=$(yq e '.version' components/edgesync/idf_component.yml)
+          VERSION=$(yq -r '.version' components/edgesync/idf_component.yml)
           echo "version=v$VERSION" >> $GITHUB_OUTPUT
           echo "Detected component version: v$VERSION"
 
