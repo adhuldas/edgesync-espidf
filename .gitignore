@@ -44,13 +44,21 @@ build/
 Build/
 build-*/
 
-# CMake generated files
+# CMake generated files (inside build directories only - build/ above
+# already covers this, but keep these for in-place CMake builds)
 CMakeFiles/
 CMakeCache.txt
 cmake_install.cmake
-Makefile
 install_manifest.txt
 compile_commands.json
+
+# Debug symbol bundles (macOS)
+*.dSYM/
+
+# test_host compiled binaries
+/components/edgesync/test_host/test_crc32
+/components/edgesync/test_host/test_retry
+/components/edgesync/test_host/test_flashq_format
 
 # Temporary files
 *.tmp
