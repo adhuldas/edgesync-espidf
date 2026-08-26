@@ -64,7 +64,8 @@ void app_main(void)
         edgesync_stats_t stats;
         if (edgesync_get_stats(handle, &stats) == ESP_OK) {
             ESP_LOGI(TAG, "pending=%u in_flight=%u delivered_awaiting_gc=%u since_boot(ok=%llu, fail=%llu)",
-                     stats.pending_messages, stats.in_flight_messages, stats.delivered_awaiting_gc,
+                     (unsigned)stats.pending_messages, (unsigned)stats.in_flight_messages,
+                     (unsigned)stats.delivered_awaiting_gc,
                      (unsigned long long)stats.successful_deliveries,
                      (unsigned long long)stats.failed_deliveries);
         }

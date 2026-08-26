@@ -69,3 +69,8 @@ Testing/
 .cache/
 .serena/
 .claude/
+
+# ESP-IDF generated project files
+sdkconfig
+sdkconfig.old
+dependencies.lock

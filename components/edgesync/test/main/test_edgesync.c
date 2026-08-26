@@ -16,8 +16,6 @@
 #include "edgesync/edgesync.h"
 #include "edgesync_storage_flashq.h"
 
-#define TEST_ESP_OK(expr) TEST_ASSERT_EQUAL(ESP_OK, (expr))
-
 /* ------------------------------------------------------------------------
  * Fixture: the "edgesync" data partition is shared by every test case, so
  * each one starts from a fully erased partition.
@@ -155,7 +153,7 @@ TEST_CASE("retryable failures are retried with backoff until success", "[edgesyn
     TEST_ASSERT_TRUE(wait_for_event(EDGESYNC_EVENT_RETRY, pdMS_TO_TICKS(2000)));
     TEST_ASSERT_TRUE(wait_for_event(EDGESYNC_EVENT_RETRY, pdMS_TO_TICKS(2000)));
     TEST_ASSERT_TRUE(wait_for_event(EDGESYNC_EVENT_DELIVERED, pdMS_TO_TICKS(2000)));
-    TEST_ASSERT_EQUAL_size_t(3, fake.call_count);
+    TEST_ASSERT_EQUAL_UINT32(3, fake.call_count);
 
     TEST_ESP_OK(edgesync_stop(handle));
     TEST_ESP_OK(edgesync_deinit(handle));
@@ -179,7 +177,7 @@ TEST_CASE("a permanent failure dead-letters immediately", "[edgesync]")
     TEST_ESP_OK(edgesync_publish(handle, "telemetry", "x", 1, NULL));
 
     TEST_ASSERT_TRUE(wait_for_event(EDGESYNC_EVENT_DEAD_LETTER, pdMS_TO_TICKS(2000)));
-    TEST_ASSERT_EQUAL_size_t(1, fake.call_count);
+    TEST_ASSERT_EQUAL_UINT32(1, fake.call_count);
 
     edgesync_stats_t stats;
     TEST_ESP_OK(edgesync_get_stats(handle, &stats));
@@ -213,7 +211,7 @@ TEST_CASE("retry_max_attempts dead-letters once the limit is reached", "[edgesyn
     TEST_ESP_OK(edgesync_publish(handle, "telemetry", "x", 1, NULL));
 
     TEST_ASSERT_TRUE(wait_for_event(EDGESYNC_EVENT_DEAD_LETTER, pdMS_TO_TICKS(2000)));
-    TEST_ASSERT_EQUAL_size_t(2, fake.call_count); /* stopped after the 2nd attempt, not the 3rd */
+    TEST_ASSERT_EQUAL_UINT32(2, fake.call_count); /* stopped after the 2nd attempt, not the 3rd */
 
     TEST_ESP_OK(edgesync_stop(handle));
     TEST_ESP_OK(edgesync_deinit(handle));

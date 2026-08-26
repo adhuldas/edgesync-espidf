@@ -13,7 +13,7 @@ extern "C" {
 /**
  * @brief Instantiate the storage backend selected by `config`.
  *
- * On success, *out_ops/*out_ctx are ready for init()+recover() to be called.
+ * On success, *out_ops and *out_ctx are ready for init()+recover() to be called.
  */
 esp_err_t edgesync_storage_create(const edgesync_config_t *config,
                                    uint32_t effective_max_messages,

@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  host-tests:
+    name: Host unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run host test suite (CRC / retry / flash-queue format)
+        working-directory: components/edgesync/test_host
+        run: make test
+
+  idf-build:
+    name: Build (${{ matrix.project }})
+    runs-on: ubuntu-latest
+    container:
+      image: espressif/idf:release-v5.1
+    strategy:
+      fail-fast: false
+      matrix:
+        project:
+          - test
+          - examples/basic
+          - examples/http
+    steps:
+      - uses: actions/checkout@v4
+      - name: idf.py build
+        shell: bash
+        working-directory: components/edgesync/${{ matrix.project }}
+        run: |
+          . "$IDF_PATH/export.sh"
+          idf.py set-target esp32
+          idf.py build
