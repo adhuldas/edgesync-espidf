@@ -27,6 +27,7 @@ jobs:
           - test
           - examples/basic
           - examples/http
+          - examples/mqtt
     steps:
       - uses: actions/checkout@v4
       - name: idf.py build

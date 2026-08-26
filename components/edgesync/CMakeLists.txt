@@ -13,6 +13,7 @@ idf_component_register(
         "src/edgesync_id.c"
         "src/edgesync_transport.c"
         "src/edgesync_http.c"
+        "src/edgesync_mqtt.c"
     INCLUDE_DIRS
         "include"
     PRIV_INCLUDE_DIRS
@@ -28,4 +29,5 @@ idf_component_register(
         nvs_flash
         esp_http_client
         esp-tls
+        mqtt
 )

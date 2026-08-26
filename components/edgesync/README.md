@@ -22,9 +22,10 @@ message state machine, [STORAGE.md](STORAGE.md) for the on-flash format, and
 - **Automatic retry** — exponential backoff with jitter, configurable limits,
   and dead-lettering of messages that exhaust their retries or are
   permanently rejected.
-- **Pluggable transport** — a built-in HTTP(S) client (TLS verified by
-  default via the ESP-IDF certificate bundle), or bring your own
-  (MQTT, CoAP, BLE, ...).
+- **Pluggable transport** — a built-in HTTP(S) client and a built-in MQTT
+  client (both TLS verified by default via the ESP-IDF certificate bundle),
+  or bring your own (CoAP, BLE, ...). The MQTT transport works unchanged
+  over Wi-Fi/Ethernet or a cellular (GSM) PPP link — see TRANSPORTS.md.
 - **Backpressure policies** — reject new messages, or drop the oldest /
   lowest-priority pending message when the queue is full.
 - **Observable** — an optional event callback (queued / delivered / retry /

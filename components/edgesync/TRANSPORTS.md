@@ -63,11 +63,69 @@ Used automatically whenever `edgesync_config_t::transport_ops` is left
 - No response at all (DNS failure, connection refused, TLS handshake
   failure, timeout) is always retryable.
 
+## Built-in MQTT transport
+
+Unlike HTTP, this one is *not* wired in automatically (there is no
+`edgesync_config_t::mqtt` field) — an MQTT client keeps a persistent
+connection and session, so you create it explicitly and plug it into the
+generic transport slot:
+
+```c
+const edgesync_transport_ops_t *mqtt_ops;
+void *mqtt_ctx;
+
+edgesync_mqtt_transport_config_t mqtt_cfg = {
+    .broker_uri = "mqtts://broker.example.com:8883",
+    .topic = "devices/edge-01",
+    .qos = 1,
+};
+ESP_ERROR_CHECK(edgesync_mqtt_transport_create(&mqtt_cfg, &mqtt_ops, &mqtt_ctx));
+
+edgesync_config_t config = EDGESYNC_DEFAULT_CONFIG();
+config.transport_ops = mqtt_ops;
+config.transport_ctx = mqtt_ctx;
+
+edgesync_handle_t handle;
+ESP_ERROR_CHECK(edgesync_init(&config, &handle));
+ESP_ERROR_CHECK(edgesync_start(handle));
+
+// ... after edgesync_deinit():
+edgesync_mqtt_transport_destroy(mqtt_ctx);
+```
+
+- Publishes each message to `"<topic>/<destination>"` (or exactly `topic`
+  if `no_append_destination` is set).
+- `deliver()` publishes and then waits up to `timeout_ms` for the matching
+  `MQTT_EVENT_PUBLISHED` event: for QoS 1/2 that means a genuine broker
+  acknowledgment; for QoS 0 it only confirms the message was handed to the
+  network, since QoS 0 has no broker ack by design.
+- Never returns `EDGESYNC_DELIVERY_PERMANENT_FAILURE` — plain MQTT publish
+  (v3.1.1) has no reject/reason code, so every failure (not connected, socket
+  error, ack timeout) is classified retryable and left to backoff/retry.
+- TLS verification is on by default for `mqtts://` URIs via the ESP-IDF
+  certificate bundle, same as the HTTP transport; see the "Security" section
+  of [README.md](README.md).
+- The client is created once and its connection (with esp-mqtt's own
+  auto-reconnect) is kept for the transport's lifetime, rather than
+  reconnecting per message like the HTTP transport does per request.
+
+**Wi-Fi and cellular (GSM) are interchangeable.** This transport only talks
+to whatever IP network is already up — it has no idea whether that's Wi-Fi,
+Ethernet, or a PPP link brought up over a cellular modem via
+[`esp_modem`](https://components.espressif.com/components/espressif/esp_modem).
+To send over GSM: bring up the modem and PPP netif with `esp_modem` (or your
+own AT-command sequence) *before* calling `edgesync_mqtt_transport_create()`
+and `edgesync_init()` — the transport config, topic layout, QoS handling,
+and retry behavior are all identical to the Wi-Fi case; only the network
+bring-up code changes. See `examples/mqtt` for the Wi-Fi version; swapping
+`wifi_init_station()` for an `esp_modem` PPP bring-up is the only change
+needed to run it over GSM instead.
+
 ## Writing a custom transport
 
 Set `transport_ops` and (optionally) `transport_ctx` in `edgesync_config_t`;
 `http` is then ignored. A minimal example that always reports success (for
-testing) or a fixed-endpoint MQTT publish:
+testing):
 
 ```c
 static edgesync_delivery_result_t my_deliver(void *ctx, const edgesync_message_t *msg, int *status)

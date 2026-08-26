@@ -83,6 +83,43 @@ typedef struct {
     edgesync_delivery_result_t (*classify_status)(int http_status);
 } edgesync_http_transport_config_t;
 
+/**
+ * @brief Configuration for the built-in MQTT transport.
+ *
+ * Unlike the HTTP transport, this one is not wired in automatically - the
+ * MQTT client keeps a persistent connection and session, so create it
+ * explicitly with edgesync_mqtt_transport_create() (edgesync_mqtt.h) and
+ * hand the resulting ops/ctx to edgesync_config_t::transport_ops /
+ * transport_ctx. It only talks to the standard IP netif, so the same
+ * configuration works unchanged over Wi-Fi, Ethernet, or a PPP link brought
+ * up over a cellular modem (e.g. via esp_modem) - swapping the network
+ * underneath requires no transport changes; see TRANSPORTS.md.
+ */
+typedef struct {
+    const char *broker_uri;          /**< e.g. "mqtt://host:1883" or "mqtts://host:8883". Required. */
+    const char *topic;                /**< Base topic. Required. */
+    bool no_append_destination;      /**< Default false: "/<destination>" is appended to the topic.
+                                           Set true to publish every destination to the exact same topic. */
+
+    const char *client_id;           /**< NULL -> esp-mqtt default (derived from MAC address). */
+    const char *username;            /**< Optional. Not logged. */
+    const char *password;            /**< Optional. Not logged. */
+
+    int qos;                         /**< 0, 1, or 2. Any other value (e.g. -1) -> Kconfig default. */
+    bool retain;                     /**< Set the MQTT retain flag on published messages. */
+
+    uint32_t timeout_ms;             /**< Per-publish wait for local hand-off (QoS 0) or broker ack (QoS 1/2).
+                                           0 -> Kconfig default. */
+
+    bool use_cert_bundle;            /**< Default true: attach ESP-IDF's bundled CA store via esp_crt_bundle_attach
+                                           for mqtts:// URIs. */
+    const char *cert_pem;            /**< Optional PEM CA cert; overrides use_cert_bundle when non-NULL. */
+    bool skip_cert_common_name_check; /**< Default false. Strongly discouraged; see SECURITY notes in README. */
+
+    const char *client_cert_pem;     /**< Optional client certificate for mutual TLS. */
+    const char *client_key_pem;      /**< Optional client private key for mutual TLS. */
+} edgesync_mqtt_transport_config_t;
+
 #ifdef __cplusplus
 }
 #endif

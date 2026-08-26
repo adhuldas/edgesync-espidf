@@ -1,0 +1,26 @@
+menu "EdgeSync MQTT Example"
+
+    config EXAMPLE_WIFI_SSID
+        string "Wi-Fi SSID"
+        default "myssid"
+
+    config EXAMPLE_WIFI_PASSWORD
+        string "Wi-Fi password"
+        default "mypassword"
+
+    config EXAMPLE_MQTT_BROKER_URI
+        string "MQTT broker URI"
+        default "mqtt://broker.hivemq.com:1883"
+        help
+            Passed to edgesync_mqtt_transport_config_t::broker_uri. The
+            public HiveMQ broker is unauthenticated and world-readable, so
+            it is only usable for connectivity testing, not real data.
+
+    config EXAMPLE_MQTT_TOPIC
+        string "EdgeSync MQTT base topic"
+        default "edgesync-example/telemetry"
+        help
+            Base topic passed to edgesync_mqtt_transport_config_t::topic.
+            Each publish goes to "<this>/<destination>".
+
+endmenu

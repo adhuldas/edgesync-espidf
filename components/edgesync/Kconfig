@@ -56,4 +56,20 @@ menu "EdgeSync"
             Default for edgesync_http_transport_config_t::timeout_ms when
             left at 0. Only used by the built-in HTTP(S) transport.
 
+    config EDGESYNC_MQTT_DEFAULT_TIMEOUT_MS
+        int "Default MQTT transport per-publish timeout (ms)"
+        default 10000
+        help
+            Default for edgesync_mqtt_transport_config_t::timeout_ms when
+            left at 0. Only used by the built-in MQTT transport.
+
+    config EDGESYNC_MQTT_DEFAULT_QOS
+        int "Default MQTT publish QoS"
+        default 1
+        range 0 2
+        help
+            Default for edgesync_mqtt_transport_config_t::qos when left
+            outside the 0-2 range (e.g. -1). Only used by the built-in
+            MQTT transport.
+
 endmenu
